@@ -1,0 +1,47 @@
+set-option -g default-shell /bin/zsh
+# Hide status bar
+set -g status off
+
+# Turn off automatic window renaming
+set-window-option -g automatic-rename off
+
+# Bigger scrollback
+set -g history-limit 5000
+
+# No lag entering VI mode?
+set -s escape-time 0
+
+# Set colors
+set -g default-terminal "screen-256color"
+
+# remap prefix to Control + f
+unbind C-b
+set -g prefix C-f
+
+# Change f to zoom
+unbind f
+bind f resize-pane -Z
+
+# Capital S for last session
+unbind L
+bind S switch-client -l
+
+# Change panes with home row
+bind h select-pane -L
+bind j select-pane -D
+bind k select-pane -U
+bind l select-pane -R
+
+# Change AND ZOOM!
+bind H select-pane -L \; resize-pane -Z
+bind J select-pane -D \; resize-pane -Z
+bind K select-pane -U \; resize-pane -Z
+bind L select-pane -R \; resize-pane -Z
+
+# vi-mode for selecty (prefix-[) mode
+setw -g mode-keys vi
+bind-key -Tcopy-mode-vi 'v' send -X begin-selection
+bind-key -Tcopy-mode-vi 'y' send -X copy-selection
+bind-key -Tcopy-mode-vi Escape send -X cancel
+bind-key -Tcopy-mode-vi V send -X rectangle-toggle
+
