@@ -39,3 +39,7 @@ do
 done
 
 unset config_files
+alias dc='HOST_OWNER=`stat -c'%u:%g' .` docker-compose'
+alias dk='HOST_OWNER=`stat -c'%u:%g' .` docker-compose'
+
+bindkey -v

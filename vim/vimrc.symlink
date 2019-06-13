@@ -71,11 +71,14 @@ nnoremap <LEFT>  <C-w>>
 nnoremap <RIGHT> <C-w><
 
 " Ctrl-P settings
+let g:ctrlp_max_files = 10000 
 let g:ctrlp_max_height = 20
 let g:ctrlp_max_depth = 40
 let g:ctrlp_prompt_mappings = {
     \ 'PrtSelectMove("k")':   ['<Tab>'],
     \ }
+let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
+
 set wildignore+=*/tmp/*,node_modules
 nnoremap <leader>y :tabe<CR>:CtrlP<CR>
 nnoremap <leader>t :CtrlP<CR>
@@ -120,6 +123,7 @@ let g:jsx_ext_required = 0
 set expandtab
 set shiftwidth=2 tabstop=2
 au BufRead,BufNewFile *.thor set filetype=ruby
+au BufRead,BufNewFile *.jbuilder set filetype=ruby
 au BufRead,BufNewFile *.god set filetype=ruby
 au BufRead,BufNewFile *.rabl set filetype=ruby
 au BufRead,BufNewFile *.axlsx set filetype=ruby
@@ -167,3 +171,5 @@ let g:slime_target = "tmux"
 let g:slime_default_config = {"socket_name": "default", "target_pane": ":0.2"}
 "
 " docker inotify workaround
+
+let g:ackprg = "ack-grep --ignore-dir={log,public,results}"
