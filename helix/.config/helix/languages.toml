@@ -1,0 +1,18 @@
+[[language]]
+name="go"
+formatter = { command = "goimports" }
+indent = { tab-width = 2, unit = "\t" }
+
+[[language]]
+name = "typescript"
+formatter = { command = 'prettier', args = ["--parser", "typescript"] }
+auto-format = true
+
+[[language]]
+name = "tsx"
+formatter = { command = 'prettier', args = ["--parser", "typescript"] }
+auto-format = true
+ 
+[[language]]
+name = "sql"
+indent = { tab-width = 2, unit = "  " } 
