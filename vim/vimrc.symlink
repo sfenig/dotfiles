@@ -14,12 +14,13 @@ set guioptions-=T
 set hlsearch
 set backspace=2
 
-set clipboard=unnamed
+set clipboard=unnamedplus
 
 " Dont ask to re-read files changed outside vim
 set autoread
 
 set rnu "relative line numbers
+set number "set line number"
 
 " toggle red line at 101st character to keep lines under 80 chars
 function! g:ToggleRedline()
@@ -45,12 +46,28 @@ let g:ruby_debugger_progname = 'mvim'
 filetype plugin indent on
 set ignorecase
 
-" Configure vim-rspec
-let s:rspec_tmux_command = "tmux send -t 1 'bin/rspec {spec}' Enter" 
-let g:rspec_command = "!echo " . s:rspec_tmux_command . " && " . s:rspec_tmux_command
-nnoremap <leader>rr :silent call RunNearestSpec()<CR><c-L>
-nnoremap <leader>rf :silent call RunCurrentSpecFile()<CR><c-L>
-nnoremap <leader>rl :silent call RunLastSpec()<CR><c-L>
+" Configure go tests 
+let s:last_go_run = ""
+
+function! g:CurrentGoSuiteTest()
+  let s:last_go_run = "-test.timeout 360s ./..."
+  call g:LastGoFileTest()
+endfunc
+nnoremap <leader>rs :call g:CurrentGoSuiteTest()<CR><C-L>
+
+function! g:CurrentGoFuncTest()
+  let temp = system("~/testReducer -file " . expand("%") . " -line " . line("."))
+  let s:last_go_run = substitute(temp, '\n', '', 'g')
+  call g:LastGoFileTest()
+endfunc
+nnoremap <leader>rr :call g:CurrentGoFuncTest()<CR><C-L>
+
+function! g:LastGoFileTest()
+  :execute "! tmux send -t 0.2 'clear' Enter"
+  :execute "! tmux send -t 0.2 'cd /app' Enter"
+  :execute "! tmux send -t 0.2 'GIN_MODE=release go test -p 1 -failfast -count 1 " . s:last_go_run . "' Enter"
+endfunc
+nnoremap <leader>rl :call g:LastGoFileTest()<CR><C-L>
 
 " New buffer at direction
 nmap <leader>sh  :leftabove  vnew<CR>
@@ -93,10 +110,12 @@ nmap <C-N><C-N> :set invnumber<CR>
 
 " Random Leader Commands
 nnoremap <leader>W :Wipetabs
-nnoremap <leader>a :tabe\|:Ack 
+nnoremap <leader>a :tabe\|:Rg 
 nnoremap <leader>g :Git
 nnoremap <leader>4 :tabclose<CR>
 nnoremap <leader>. :! 
+nnoremap <leader>yd :YcmCompleter GoToDefinition<CR>
+
 
 " Clear highlighting
 map <C-h> :nohl<cr>
@@ -129,7 +148,9 @@ au BufRead,BufNewFile *.rabl set filetype=ruby
 au BufRead,BufNewFile *.axlsx set filetype=ruby
 au BufRead,BufNewFile *.hamljs set filetype=haml
 
-autocmd Filetype python setlocal sw=2 ts=2 sts=2
+" set filetypes as typescriptreact
+autocmd BufNewFile,BufRead *.tsx,*.jsx set filetype=typescriptreact
+autocmd Filetype python setlocal sw=4 ts=4 sts=4
 
 " Populate args list with files in the quickfix window. Obtained from.. http://stackoverflow.com/questions/5686206/search-replace-using-quickfix-list-in-vim
 command! -nargs=0 -bar Qargs execute 'args ' . QuickfixFilenames()
@@ -172,4 +193,28 @@ let g:slime_default_config = {"socket_name": "default", "target_pane": ":0.2"}
 "
 " docker inotify workaround
 
+let g:prettier#autoformat = 0
+autocmd BufWritePre *.js,*.jsx,*.ts,*.tsx,*.css,*.json,*.md,*.yaml,*.html Prettier
+
 let g:ackprg = "ack-grep --ignore-dir={log,public,results}"
+
+let g:go_fmt_command = "goimports"
+let g:go_def_mode = "gopls"
+let g:go_info_mode = "gopls"
+
+nmap =j :%!python -m json.tool<CR>
+
+" dark red
+hi tsxTagName guifg=#E06C75
+hi tsxComponentName guifg=#E06C75
+hi tsxCloseComponentName guifg=#E06C75
+
+" orange
+hi tsxCloseString guifg=#F99575
+hi tsxCloseTag guifg=#F99575
+hi tsxCloseTagName guifg=#F99575
+hi tsxAttributeBraces guifg=#F99575
+hi tsxEqual guifg=#F99575
+
+" yellow
+hi tsxAttrib guifg=#F8BD7F cterm=italic
